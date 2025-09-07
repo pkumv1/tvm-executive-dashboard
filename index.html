@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TVM Executive Dashboard - Enhanced Analytics</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif; background: linear-gradient(135deg, #fefefe 0%, #f7f9fc 100%); color: #2d3748; min-height: 100vh; padding: 20px 15px; }
+        .dashboard-container { max-width: 1920px; margin: 0 auto; }
+        .dashboard-header { text-align: center; margin-bottom: 25px; padding: 28px; background: white; border-radius: 20px; box-shadow: 0 2px 15px rgba(0, 0, 0, 0.06); border: 1px solid #e8ecf1; position: relative; overflow: hidden; }
+        .dashboard-header::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #a7f3d0 0%, #bfdbfe 25%, #e9d5ff 50%, #fecaca 75%, #fed7aa 100%); }
+        .dashboard-header h1 { font-size: 2.4rem; font-weight: 300; color: #1a365d; margin-bottom: 8px; letter-spacing: -0.5px; }
+        .dashboard-header .subtitle { color: #718096; font-size: 1.05rem; font-weight: 300; margin-bottom: 6px; }
+        .data-stats { display: flex; justify-content: center; gap: 25px; margin-top: 12px; flex-wrap: wrap; }
+        .data-stat { font-size: 0.85rem; color: #64748b; padding: 4px 12px; background: #f8fafc; border-radius: 20px; }
+        .data-stat strong { color: #334155; font-weight: 600; }
+        .last-update { margin-top: 10px; font-size: 0.85rem; color: #94a5b8; font-style: italic; }
+        .tab-navigation { display: flex; justify-content: center; gap: 20px; margin-bottom: 25px; background: white; padding: 15px; border-radius: 15px; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05); }
+        .tab-button { padding: 12px 40px; background: #f8f9fa; border: 2px solid #e2e8f0; border-radius: 50px; color: #4a5568; font-size: 0.95rem; font-weight: 500; cursor: pointer; transition: all 0.3s ease; outline: none; }
+        .tab-button:hover { background: #f0f4f8; border-color: #cbd5e0; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); }
+        .tab-button.active { background: linear-gradient(135deg, #bee3f8 0%, #ddd6fe 100%); border-color: transparent; color: #1e293b; box-shadow: 0 4px 15px rgba(147, 197, 253, 0.3); }
+        .tab-content { display: none; animation: fadeIn 0.3s ease-in; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .kpi-primary { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 18px; margin-bottom: 30px; }
+        .kpi-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05); transition: all 0.3s ease; border: 1px solid #e8ecf1; position: relative; overflow: hidden; }
+        .kpi-card::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: linear-gradient(180deg, #a7f3d0 0%, #6ee7b7 100%); }
+        .kpi-card.warning::before { background: linear-gradient(180deg, #fed7aa 0%, #fb923c 100%); }
+        .kpi-card.critical::before { background: linear-gradient(180deg, #fecaca 0%, #fca5a5 100%); }
+        .kpi-card.info::before { background: linear-gradient(180deg, #bfdbfe 0%, #93c5fd 100%); }
+        .kpi-card:hover { transform: translateY(-3px); box-shadow: 0 5px 18px rgba(0, 0, 0, 0.08); }
+        .kpi-label { font-size: 0.8rem; color: #64748b; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.6px; font-weight: 600; }
+        .kpi-value { font-size: 1.9rem; font-weight: 300; color: #1a365d; margin-bottom: 8px; line-height: 1; }
+        .kpi-change { font-size: 0.85rem; display: flex; align-items: center; gap: 4px; font-weight: 500; }
+        .kpi-change.positive { color: #10b981; }
+        .kpi-change.negative { color: #ef4444; }
+        .kpi-change.neutral { color: #6b7280; }
+        .section-title { text-align: center; font-size: 1.4rem; color: #1a365d; font-weight: 300; margin: 35px 0 25px; letter-spacing: -0.3px; }
+        .chart-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(480px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .chart-card { background: white; border-radius: 12px; padding: 22px; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05); border: 1px solid #e8ecf1; }
+        .chart-card h3 { font-size: 1.2rem; margin-bottom: 18px; color: #1a365d; font-weight: 400; padding-bottom: 10px; border-bottom: 2px solid #f7fafc; }
+        .chart-wrapper { position: relative; height: 280px; }
+        .component-matrix { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 30px; }
+        .component-card { background: white; border-radius: 10px; padding: 18px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); text-align: center; transition: all 0.3s ease; border: 1px solid #e8ecf1; position: relative; overflow: hidden; }
+        .component-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, #a7f3d0 0%, #6ee7b7 100%); }
+        .component-card.warning::before { background: linear-gradient(90deg, #fed7aa 0%, #fb923c 100%); }
+        .component-card.critical::before { background: linear-gradient(90deg, #fecaca 0%, #fca5a5 100%); }
+        .component-card:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); }
+        .component-name { font-size: 0.9rem; color: #4a5568; margin-bottom: 8px; font-weight: 500; }
+        .component-status { font-size: 1.6rem; font-weight: 300; margin-bottom: 4px; }
+        .component-errors { font-size: 0.7rem; color: #94a3b8; }
+        .status-good { color: #10b981; }
+        .status-warning { color: #f59e0b; }
+        .status-critical { color: #ef4444; }
+        .insights-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .insight-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05); border: 1px solid #e8ecf1; }
+        .insight-header { font-size: 1.1rem; color: #1a365d; margin-bottom: 15px; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+        .insight-item { padding: 10px 12px; margin-bottom: 8px; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border-radius: 8px; border-left: 3px solid #cbd5e0; font-size: 0.9rem; line-height: 1.5; }
+        .insight-item.critical { background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); border-left-color: #ef4444; }
+        .insight-item.warning { background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border-left-color: #f59e0b; }
+        .insight-item.success { background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border-left-color: #10b981; }
+        .hopper-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .hopper-card { background: white; border-radius: 10px; padding: 18px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); border: 1px solid #e8ecf1; }
+        .hopper-name { font-size: 1rem; color: #2d3748; margin-bottom: 12px; font-weight: 500; }
+        .hopper-bar { background: #e2e8f0; height: 28px; border-radius: 14px; overflow: hidden; margin-bottom: 8px; position: relative; }
+        .hopper-fill { height: 100%; background: linear-gradient(90deg, #a7f3d0 0%, #6ee7b7 100%); transition: width 0.5s ease; display: flex; align-items: center; justify-content: flex-end; padding-right: 10px; color: white; font-weight: 600; font-size: 0.85rem; }
+        .hopper-stats { display: flex; justify-content: space-between; font-size: 0.8rem; color: #64748b; }
+        .executive-summary { background: linear-gradient(135deg, #1a365d 0%, #2563eb 100%); color: white; border-radius: 20px; padding: 35px; margin: 40px 0; box-shadow: 0 10px 30px rgba(26, 54, 93, 0.3); }
+        .executive-summary h2 { font-size: 1.8rem; font-weight: 300; margin-bottom: 25px; text-align: center; letter-spacing: -0.5px; }
+        .executive-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; margin-bottom: 30px; }
+        .executive-card { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 12px; padding: 20px; backdrop-filter: blur(10px); }
+        .executive-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 15px; color: #bee3f8; text-transform: uppercase; letter-spacing: 0.5px; }
+        .executive-list { list-style: none; }
+        .executive-list li { padding: 8px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); font-size: 0.9rem; line-height: 1.5; }
+        .executive-list li:last-child { border-bottom: none; }
+        .highlight { font-weight: 600; color: #fbbf24; }
+        .recommendation-box { background: rgba(254, 243, 199, 0.1); border: 2px solid rgba(251, 191, 36, 0.3); border-radius: 12px; padding: 20px; margin-top: 20px; }
+        .recommendation-box h4 { color: #fbbf24; font-size: 1.1rem; margin-bottom: 12px; }
+        .recommendation-box ul { list-style: none; margin: 0; padding: 0; }
+        .recommendation-box li { padding: 6px 0; padding-left: 20px; position: relative; }
+        .recommendation-box li::before { content: '→'; position: absolute; left: 0; color: #fbbf24; }
+        .loading-indicator { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px 40px; border-radius: 10px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); z-index: 9999; display: none; }
+        .loading-indicator.show { display: block; }
+        @media (max-width: 768px) { .chart-grid { grid-template-columns: 1fr; } .component-matrix { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); } .insights-container { grid-template-columns: 1fr; } .kpi-primary { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); } .tab-button { padding: 10px 25px; font-size: 0.9rem; } .executive-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="loading-indicator" id="loadingIndicator">Loading dashboard...</div>
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <h1>TVM Executive Dashboard</h1>
+            <div class="subtitle">Exploratory Data Analysis</div>
+            <div class="data-stats">
+                <span class="data-stat"><strong>297</strong> Devices</span>
+                <span class="data-stat"><strong>398,520</strong> Total Transactions</span>
+                <span class="data-stat"><strong>18,703</strong> Total Errors (4.69%)</span>
+                <span class="data-stat"><strong>94.83%</strong> Avg Availability</span>
+                <span class="data-stat"><strong>£2.84M</strong> Total Revenue</span>
+                <span class="data-stat"><strong>1.43:1</strong> Cash:Card Ratio</span>
+                <span class="data-stat"><strong>£7.12</strong> Avg Transaction</span>
+                <span class="data-stat"><strong>Mar 2024 - Jun 2025</strong> Period</span>
+            </div>
+            <div class="data-stats" style="margin-top: 8px;">
+                <span class="data-stat"><strong>2,217</strong> Daily Avg Events</span>
+                <span class="data-stat"><strong>825</strong> Daily Avg Transactions</span>
+                <span class="data-stat"><strong>39</strong> Daily Avg Errors</span>
+                <span class="data-stat"><strong>£5,875</strong> Daily Avg Revenue</span>
+                <span class="data-stat"><strong>96.8%</strong> Transaction Success Rate</span>
+                <span class="data-stat"><strong>85.2%</strong> Printer Availability (Critical)</span>
+                <span class="data-stat"><strong>68%</strong> Oyster Transaction Share</span>
+                <span class="data-stat"><strong>12</strong> Devices Predicted to Fail (7d)</span>
+            </div>
+            <div class="last-update" id="lastUpdate">Loading...</div>
+        </div>
+        <div class="tab-navigation">
+            <button class="tab-button active" onclick="switchTab('operational')">Operational Performance</button>
+            <button class="tab-button" onclick="switchTab('errors')">Error Analytics</button>
+            <button class="tab-button" onclick="switchTab('transactions')">Transaction Analytics</button>
+        </div>
+        <div id="operational-tab" class="tab-content active">
+            <div class="kpi-primary">
+                <div class="kpi-card">
+                    <div class="kpi-label">System Availability (Average)</div>
+                    <div class="kpi-value">94.83%</div>
+                    <div class="kpi-change positive">↑ 1.2% improved</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Healthy Devices (Current)</div>
+                    <div class="kpi-value">273/297</div>
+                    <div class="kpi-change positive">91.9% operational</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Critical Components</div>
+                    <div class="kpi-value">2</div>
+                    <div class="kpi-change negative">Printers need attention</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Daily Avg Events</div>
+                    <div class="kpi-value">2,217</div>
+                    <div class="kpi-change neutral">Per day average</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Current Temperature</div>
+                    <div class="kpi-value">42.5°C</div>
+                    <div class="kpi-change positive">Optimal range</div>
+                </div>
+                <div class="kpi-card info">
+                    <div class="kpi-label">System MTBF (Average)</div>
+                    <div class="kpi-value">125 days</div>
+                    <div class="kpi-change positive">Above target</div>
+                </div>
+            </div>
+            <h2 class="section-title">Performance Trends & Analysis</h2>
+            <div class="chart-grid">
+                <div class="chart-card">
+                    <h3>30-Day System Availability Trend</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="availabilityChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3>Component Health Distribution</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="healthChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3>Daily Operational Pattern</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="dailyPatternChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3>Temperature vs Performance</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="tempPerfChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <h2 class="section-title">Component Performance Matrix</h2>
+            <div class="component-matrix">
+                <div class="component-card">
+                    <div class="component-name">Power System</div>
+                    <div class="component-status status-good">99.80%</div>
+                    <div class="component-errors">MTBF: 120 days</div>
+                </div>
+                <div class="component-card">
+                    <div class="component-name">PED (PIN Entry)</div>
+                    <div class="component-status status-good">99.10%</div>
+                    <div class="component-errors">MTBF: 95 days</div>
+                </div>
+                <div class="component-card">
+                    <div class="component-name">Coin Unit</div>
+                    <div class="component-status status-good">98.20%</div>
+                    <div class="component-errors">MTBF: 45 days</div>
+                </div>
+                <div class="component-card">
+                    <div class="component-name">Card Dispenser</div>
+                    <div class="component-status status-good">97.50%</div>
+                    <div class="component-errors">MTBF: 38 days</div>
+                </div>
+                <div class="component-card">
+                    <div class="component-name">RTD Device</div>
+                    <div class="component-status status-good">96.80%</div>
+                    <div class="component-errors">MTBF: 32 days</div>
+                </div>
+                <div class="component-card warning">
+                    <div class="component-name">Note Recycler</div>
+                    <div class="component-status status-warning">92.30%</div>
+                    <div class="component-errors">MTBF: 18 days</div>
+                </div>
+                <div class="component-card critical">
+                    <div class="component-name">Receipt Printer</div>
+                    <div class="component-status status-critical">89.70%</div>
+                    <div class="component-errors">MTBF: 12 days</div>
+                </div>
+                <div class="component-card critical">
+                    <div class="component-name">Ticket Printer</div>
+                    <div class="component-status status-critical">85.20%</div>
+                    <div class="component-errors">MTBF: 8 days</div>
+                </div>
+            </div>
+            <h2 class="section-title">Coin Hopper Utilization Analysis</h2>
+            <div class="hopper-grid">
+                <div class="hopper-card">
+                    <div class="hopper-name">Hopper 1 (5p coins)</div>
+                    <div class="hopper-bar">
+                        <div class="hopper-fill" style="width: 75%;">75%</div>
+                    </div>
+                    <div class="hopper-stats">
+                        <span>Min: 10</span>
+                        <span>Avg: 75</span>
+                        <span>Max: 100</span>
+                    </div>
+                </div>
+                <div class="hopper-card">
+                    <div class="hopper-name">Hopper 2 (10p coins)</div>
+                    <div class="hopper-bar">
+                        <div class="hopper-fill" style="width: 68%;">68%</div>
+                    </div>
+                    <div class="hopper-stats">
+                        <span>Min: 5</span>
+                        <span>Avg: 68</span>
+                        <span>Max: 100</span>
+                    </div>
+                </div>
+                <div class="hopper-card">
+                    <div class="hopper-name">Hopper 3 (20p coins)</div>
+                    <div class="hopper-bar">
+                        <div class="hopper-fill" style="width: 82%;">82%</div>
+                    </div>
+                    <div class="hopper-stats">
+                        <span>Min: 15</span>
+                        <span>Avg: 82</span>
+                        <span>Max: 100</span>
+                    </div>
+                </div>
+                <div class="hopper-card">
+                    <div class="hopper-name">Hopper 4 (50p coins)</div>
+                    <div class="hopper-bar">
+                        <div class="hopper-fill" style="width: 45%; background: linear-gradient(90deg, #fed7aa 0%, #fb923c 100%);">45%</div>
+                    </div>
+                    <div class="hopper-stats">
+                        <span>Min: 0</span>
+                        <span>Avg: 45</span>
+                        <span>Max: 100</span>
+                    </div>
+                </div>
+            </div>
+            <h2 class="section-title">Operational Insights & Recommendations</h2>
+            <div class="insights-container">
+                <div class="insight-card">
+                    <div class="insight-header">✅ Performance Highlights</div>
+                    <div class="insight-item success">
+                        <strong>Power System Excellence:</strong> 99.80% availability with 120-day MTBF
+                    </div>
+                    <div class="insight-item success">
+                        <strong>PED Reliability:</strong> 99.10% availability, minimal intervention required
+                    </div>
+                    <div class="insight-item success">
+                        <strong>System Recovery:</strong> Availability improved from 93.5% to 94.83%
+                    </div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-header">⚠️ Attention Areas</div>
+                    <div class="insight-item warning">
+                        <strong>Note Recycler:</strong> 92.30% availability showing declining trend
+                    </div>
+                    <div class="insight-item warning">
+                        <strong>Hopper 4:</strong> 45% utilization indicates potential mechanical issue
+                    </div>
+                    <div class="insight-item warning">
+                        <strong>Temperature Events:</strong> 145 instances exceeding 60°C threshold
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="errors-tab" class="tab-content">
+            <div class="kpi-primary">
+                <div class="kpi-card critical">
+                    <div class="kpi-label">Total Errors (Fleet-Wide)</div>
+                    <div class="kpi-value">18,703</div>
+                    <div class="kpi-change negative">Across all 297 devices</div>
+                </div>
+                <div class="kpi-card critical">
+                    <div class="kpi-label">Critical Errors (Fleet Total)</div>
+                    <div class="kpi-value">2,867</div>
+                    <div class="kpi-change negative">15.3% of all errors</div>
+                </div>
+                <div class="kpi-card warning">
+                    <div class="kpi-label">Major Errors (Fleet Total)</div>
+                    <div class="kpi-value">5,234</div>
+                    <div class="kpi-change neutral">28.0% of all errors</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Errors Per Device (16 Months)</div>
+                    <div class="kpi-value">63</div>
+                    <div class="kpi-change positive">0.13 errors/device/day</div>
+                </div>
+                <div class="kpi-card warning">
+                    <div class="kpi-label">At Risk Devices (Current)</div>
+                    <div class="kpi-value">24</div>
+                    <div class="kpi-change negative">8.1% of fleet</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Daily Error Rate (Fleet)</div>
+                    <div class="kpi-value">39/day</div>
+                    <div class="kpi-change positive">↓ from 45/day</div>
+                </div>
+            </div>
+            <h2 class="section-title">Error Distribution & Patterns</h2>
+            <div class="chart-grid">
+                <div class="chart-card">
+                    <h3>Error Category Distribution</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="errorDistChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3>Temporal Error Patterns</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="temporalErrorChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3>Component Failure Analysis</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="failureChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3>Error Spike Detection</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="spikeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="transactions-tab" class="tab-content">
+            <div class="kpi-primary">
+                <div class="kpi-card info">
+                    <div class="kpi-label">Total Revenue (16 Months)</div>
+                    <div class="kpi-value">£2.84M</div>
+                    <div class="kpi-change positive">↑ 8.3% vs prev period</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Total Transactions</div>
+                    <div class="kpi-value">398,520</div>
+                    <div class="kpi-change positive">↑ 12.5% growth</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Cash Revenue (Total)</div>
+                    <div class="kpi-value">£1.67M</div>
+                    <div class="kpi-change neutral">58.8% of total</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Card Revenue (Total)</div>
+                    <div class="kpi-value">£1.17M</div>
+                    <div class="kpi-change positive">41.2% of total</div>
+                </div>
+                <div class="kpi-card warning">
+                    <div class="kpi-label">Cash:Card Ratio (Current)</div>
+                    <div class="kpi-value">1.43:1</div>
+                    <div class="kpi-change positive">↓ from 1.65:1</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Avg Transaction Value</div>
+                    <div class="kpi-value">£7.12</div>
+                    <div class="kpi-change positive">↑ £0.45</div>
+                </div>
+            </div>
+            <h2 class="section-title">Revenue Performance & Payment Trends</h2>
+            <div class="chart-grid">
+                <div class="chart-card">
+                    <h3>Monthly Revenue Trend</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3>Payment Method Distribution</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="paymentDistChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3>Hourly Transaction Pattern</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="hourlyTransChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3>Cash to Card Migration</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="cashCardTrendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <h2 class="section-title">Product Mix & Transaction Types</h2>
+            <div class="chart-grid">
+                <div class="chart-card">
+                    <h3>Product Type Volume</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="productVolumeChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3>Product Type Revenue</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="productRevenueChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <h2 class="section-title">Transaction Insights & Recommendations</h2>
+            <div class="insights-container">
+                <div class="insight-card">
+                    <div class="insight-header">💰 Revenue Opportunities</div>
+                    <div class="insight-item success">
+                        <strong>Peak Hour Optimization:</strong> Morning rush (7-9 AM) generates 35% of daily revenue
+                    </div>
+                    <div class="insight-item success">
+                        <strong>Card Growth:</strong> Card payments increased 18% month-over-month
+                    </div>
+                    <div class="insight-item success">
+                        <strong>Oyster Dominance:</strong> 68% of transactions are Oyster-related
+                    </div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-header">⚠️ Cash Management Alerts</div>
+                    <div class="insight-item warning">
+                        <strong>£5 Note Shortage:</strong> Only 145 notes remaining, refill needed within 24 hours
+                    </div>
+                    <div class="insight-item warning">
+                        <strong>Note Vault Capacity:</strong> 92% full, collection required tomorrow
+                    </div>
+                    <div class="insight-item warning">
+                        <strong>50p Hopper:</strong> Operating at 45% capacity, affecting change availability
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="executive-summary">
+            <h2>Executive Summary & Strategic Insights</h2>
+            <div class="executive-grid">
+                <div class="executive-card">
+                    <h3>🎯 Key Performance Indicators</h3>
+                    <ul class="executive-list">
+                        <li><span class="highlight">94.83%</span> fleet-wide availability (target: 95%)</li>
+                        <li><span class="highlight">£2.84M</span> total revenue over 16 months</li>
+                        <li><span class="highlight">96.8%</span> transaction success rate</li>
+                        <li><span class="highlight">273/297</span> devices fully operational</li>
+                        <li><span class="highlight">125 days</span> average MTBF exceeds target</li>
+                    </ul>
+                </div>
+                <div class="executive-card">
+                    <h3>⚠️ Critical Risk Areas</h3>
+                    <ul class="executive-list">
+                        <li>Printer systems at <span class="highlight">85-89%</span> availability</li>
+                        <li><span class="highlight">24 devices</span> predicted to fail within 7 days</li>
+                        <li>Note recycler showing <span class="highlight">declining trend</span></li>
+                        <li>50p hopper at <span class="highlight">45%</span> capacity</li>
+                        <li><span class="highlight">145 temperature</span> exceedance events</li>
+                    </ul>
+                </div>
+                <div class="executive-card">
+                    <h3>💡 Business Intelligence</h3>
+                    <ul class="executive-list">
+                        <li>Card payments growing <span class="highlight">18% MoM</span></li>
+                        <li>Morning rush generates <span class="highlight">35%</span> daily revenue</li>
+                        <li>Oyster transactions dominate at <span class="highlight">68%</span></li>
+                        <li>Cash:Card ratio improving from <span class="highlight">1.65:1 to 1.43:1</span></li>
+                        <li>Daily average revenue: <span class="highlight">£5,875</span></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="recommendation-box">
+                <h4>📊 Strategic Recommendations</h4>
+                <ul>
+                    <li><strong>Immediate Action:</strong> Schedule preventive maintenance for all printer systems within 48 hours</li>
+                    <li><strong>Cash Management:</strong> Deploy cash collection team for high-capacity vaults by EOD tomorrow</li>
+                    <li><strong>Component Replacement:</strong> Order spare parts for 50p hopper mechanisms (45% capacity issue)</li>
+                    <li><strong>Predictive Maintenance:</strong> Prioritize service for 24 at-risk devices to prevent failures</li>
+                    <li><strong>Revenue Optimization:</strong> Increase contactless payment promotions to accelerate card adoption</li>
+                    <li><strong>Temperature Control:</strong> Install additional cooling systems for devices with frequent overheating</li>
+                    <li><strong>Peak Hour Support:</strong> Deploy mobile service teams during 7-9 AM rush to minimize downtime</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <script src="dashboard.js"></script>
+</body>
+</html>
