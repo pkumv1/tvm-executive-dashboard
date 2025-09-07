@@ -1,0 +1,24 @@
+{
+  "name": "tvm-executive-dashboard",
+  "version": "1.0.0",
+  "description": "TVM Executive Dashboard - Real-time analytics and monitoring for Ticket Vending Machine operations",
+  "scripts": {
+    "dev": "npx serve .",
+    "build": "echo 'No build required for static site'"
+  },
+  "keywords": [
+    "dashboard",
+    "analytics",
+    "tvm",
+    "monitoring",
+    "executive",
+    "real-time"
+  ],
+  "author": "Your Organization",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pkumv1/tvm-executive-dashboard.git"
+  },
+  "homepage": "https://tvm-dashboard.vercel.app"
+}
