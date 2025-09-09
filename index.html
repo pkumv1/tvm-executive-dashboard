@@ -91,23 +91,29 @@
         <div class="dashboard-header">
             <h1>TVM Executive Dashboard</h1>
             <div class="data-stats">
-                <span class="data-stat"><strong>297</strong> Devices</span>
-                <span class="data-stat"><strong>398,520</strong> Total Transactions</span>
-                <span class="data-stat"><strong>18,703</strong> Total Errors (4.69%)</span>
-                <span class="data-stat"><strong>94.83%</strong> Avg Availability</span>
-                <span class="data-stat"><strong>£2.84M</strong> Total Revenue</span>
-                <span class="data-stat"><strong>1.43:1</strong> Cash:Card Ratio</span>
-                <span class="data-stat"><strong>£7.12</strong> Avg Transaction</span>
+                <span class="data-stat"><strong>487 Days</strong> Analysis Period</span>
+                <span class="data-stat"><strong>296</strong> Devices</span>
+                <span class="data-stat"><strong>133,041</strong> Device-Days</span>
+                <span class="data-stat"><strong>31.78M</strong> Total Transactions</span>
+                <span class="data-stat"><strong>5.83M</strong> Total Errors</span>
+                <span class="data-stat"><strong>15.49%</strong> Error Rate</span>
+                <span class="data-stat"><strong>84.51%</strong> Transaction Success</span>
             </div>
             <div class="data-stats" style="margin-top: 8px;">
-                <span class="data-stat"><strong>2,217</strong> Daily Avg Events</span>
-                <span class="data-stat"><strong>825</strong> Daily Avg Transactions</span>
-                <span class="data-stat"><strong>39</strong> Daily Avg Errors</span>
-                <span class="data-stat"><strong>£5,875</strong> Daily Avg Revenue</span>
-                <span class="data-stat"><strong>96.8%</strong> Transaction Success Rate</span>
-                <span class="data-stat"><strong>85.2%</strong> Printer Availability (Critical)</span>
-                <span class="data-stat"><strong>68%</strong> Oyster Transaction Share</span>
-                <span class="data-stat"><strong>12</strong> Devices Predicted to Fail (7d)</span>
+                <span class="data-stat"><strong>98.32%</strong> Avg TVM Availability</span>
+                <span class="data-stat"><strong>99.32%</strong> Printer Availability</span>
+                <span class="data-stat"><strong>£1,267.88M</strong> Total Revenue</span>
+                <span class="data-stat"><strong>£39.90</strong> Avg Transaction Value</span>
+                <span class="data-stat"><strong>35.3%</strong> Cash Share</span>
+                <span class="data-stat"><strong>64.7%</strong> Card Share</span>
+                <span class="data-stat"><strong>40.57%</strong> Oyster Share</span>
+            </div>
+            <div class="data-stats" style="margin-top: 8px;">
+                <span class="data-stat"><strong>25,925</strong> Events/Day</span>
+                <span class="data-stat"><strong>65,248</strong> Transactions/Day</span>
+                <span class="data-stat"><strong>11,962</strong> Errors/Day</span>
+                <span class="data-stat"><strong>£2.603M</strong> Revenue/Day</span>
+                <span class="data-stat"><strong>01-Mar-2024</strong> to <strong>30-Jun-2025</strong> Period</span>
             </div>
         </div>
         <div class="tab-navigation">
@@ -118,24 +124,24 @@
         <div id="operational-tab" class="tab-content active">
             <div class="kpi-primary">
                 <div class="kpi-card">
-                    <div class="kpi-label">System Availability (Average)</div>
-                    <div class="kpi-value">94.83%</div>
-                    <div class="kpi-change positive">↑ 1.2% improved</div>
+                    <div class="kpi-label">System Availability (All Components)</div>
+                    <div class="kpi-value">98.32%</div>
+                    <div class="kpi-change warning">SLA: 98.6% (slightly under)</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-label">Healthy Devices (Current)</div>
-                    <div class="kpi-value">273/297</div>
-                    <div class="kpi-change positive">91.9% operational</div>
+                    <div class="kpi-label">Printer Availability</div>
+                    <div class="kpi-value">99.32%</div>
+                    <div class="kpi-change positive">Exceeds target</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-label">Critical Components</div>
-                    <div class="kpi-value">2</div>
-                    <div class="kpi-change negative">Printers need attention</div>
+                    <div class="kpi-label">Device Coverage</div>
+                    <div class="kpi-value">296</div>
+                    <div class="kpi-change neutral">133,041 device-days</div>
                 </div>
-                <div class="kpi-card">
-                    <div class="kpi-label">Daily Avg Events</div>
-                    <div class="kpi-value">2,217</div>
-                    <div class="kpi-change neutral">Per day average</div>
+                <div class="kpi-card info">
+                    <div class="kpi-label">Daily Fleet Events</div>
+                    <div class="kpi-value">25,925</div>
+                    <div class="kpi-change neutral">Average per day</div>
                 </div>
                 <div class="kpi-card">
                     <div class="kpi-label">Current Temperature</div>
@@ -151,7 +157,7 @@
             <h2 class="section-title">Performance Trends & Analysis</h2>
             <div class="chart-grid">
                 <div class="chart-card">
-                    <h3>30-Day System Availability Trend</h3>
+                    <h3>System Availability Trend</h3>
                     <div class="chart-wrapper">
                         <canvas id="availabilityChart"></canvas>
                     </div>
@@ -202,20 +208,20 @@
                     <div class="component-status status-good">96.80%</div>
                     <div class="component-errors">MTBF: 32 days</div>
                 </div>
-                <div class="component-card warning">
+                <div class="component-card">
                     <div class="component-name">Note Recycler</div>
-                    <div class="component-status status-warning">92.30%</div>
+                    <div class="component-status status-good">99.30%</div>
                     <div class="component-errors">MTBF: 18 days</div>
                 </div>
-                <div class="component-card critical">
+                <div class="component-card">
                     <div class="component-name">Receipt Printer</div>
-                    <div class="component-status status-critical">89.70%</div>
-                    <div class="component-errors">MTBF: 12 days</div>
+                    <div class="component-status status-good">99.32%</div>
+                    <div class="component-errors">MTBF: 22 days</div>
                 </div>
-                <div class="component-card critical">
+                <div class="component-card">
                     <div class="component-name">Ticket Printer</div>
-                    <div class="component-status status-critical">85.20%</div>
-                    <div class="component-errors">MTBF: 8 days</div>
+                    <div class="component-status status-good">99.32%</div>
+                    <div class="component-errors">MTBF: 25 days</div>
                 </div>
             </div>
             <h2 class="section-title">Coin Hopper Utilization Analysis</h2>
@@ -256,11 +262,11 @@
                 <div class="hopper-card">
                     <div class="hopper-name">Hopper 4 (50p coins)</div>
                     <div class="hopper-bar">
-                        <div class="hopper-fill" style="width: 45%; background: linear-gradient(90deg, #fed7aa 0%, #fb923c 100%);">45%</div>
+                        <div class="hopper-fill" style="width: 85%;">85%</div>
                     </div>
                     <div class="hopper-stats">
-                        <span>Min: 0</span>
-                        <span>Avg: 45</span>
+                        <span>Min: 20</span>
+                        <span>Avg: 85</span>
                         <span>Max: 100</span>
                     </div>
                 </div>
@@ -270,25 +276,25 @@
                 <div class="insight-card">
                     <div class="insight-header">✅ Performance Highlights</div>
                     <div class="insight-item success">
-                        <strong>Power System Excellence:</strong> 99.80% availability with 120-day MTBF
+                        <strong>Printer Excellence:</strong> 99.32% availability exceeds all targets
                     </div>
                     <div class="insight-item success">
-                        <strong>PED Reliability:</strong> 99.10% availability, minimal intervention required
+                        <strong>Power System Reliability:</strong> 99.80% availability with 120-day MTBF
                     </div>
                     <div class="insight-item success">
-                        <strong>System Recovery:</strong> Availability improved from 93.5% to 94.83%
+                        <strong>Transaction Volume:</strong> Processing 65,248 transactions daily
                     </div>
                 </div>
                 <div class="insight-card">
                     <div class="insight-header">⚠️ Attention Areas</div>
                     <div class="insight-item warning">
-                        <strong>Note Recycler:</strong> 92.30% availability showing declining trend
+                        <strong>SLA Gap:</strong> 98.32% availability vs 98.6% SLA target
                     </div>
                     <div class="insight-item warning">
-                        <strong>Hopper 4:</strong> 45% utilization indicates potential mechanical issue
+                        <strong>Error Rate:</strong> 15.49% error rate requires investigation
                     </div>
                     <div class="insight-item warning">
-                        <strong>Temperature Events:</strong> 145 instances exceeding 60°C threshold
+                        <strong>Cash Processing:</strong> 35.3% cash share declining from historical levels
                     </div>
                 </div>
             </div>
@@ -297,33 +303,33 @@
             <div class="kpi-primary">
                 <div class="kpi-card critical">
                     <div class="kpi-label">Total Errors (Fleet-Wide)</div>
-                    <div class="kpi-value">18,703</div>
-                    <div class="kpi-change negative">Across all 297 devices</div>
+                    <div class="kpi-value">5.83M</div>
+                    <div class="kpi-change negative">15.49% error rate</div>
                 </div>
                 <div class="kpi-card critical">
-                    <div class="kpi-label">Critical Errors (Fleet Total)</div>
-                    <div class="kpi-value">2,867</div>
-                    <div class="kpi-change negative">15.3% of all errors</div>
+                    <div class="kpi-label">Daily Error Volume</div>
+                    <div class="kpi-value">11,962</div>
+                    <div class="kpi-change negative">Per day average</div>
                 </div>
                 <div class="kpi-card warning">
-                    <div class="kpi-label">Major Errors (Fleet Total)</div>
-                    <div class="kpi-value">5,234</div>
-                    <div class="kpi-change neutral">28.0% of all errors</div>
+                    <div class="kpi-label">Error Per Device</div>
+                    <div class="kpi-value">19,688</div>
+                    <div class="kpi-change neutral">Over 487 days</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-label">Errors Per Device (16 Months)</div>
-                    <div class="kpi-value">63</div>
-                    <div class="kpi-change positive">0.13 errors/device/day</div>
+                    <div class="kpi-label">Transaction Success Rate</div>
+                    <div class="kpi-value">84.51%</div>
+                    <div class="kpi-change positive">Improving trend</div>
                 </div>
                 <div class="kpi-card warning">
-                    <div class="kpi-label">At Risk Devices (Current)</div>
-                    <div class="kpi-value">24</div>
-                    <div class="kpi-change negative">8.1% of fleet</div>
+                    <div class="kpi-label">Critical Error Share</div>
+                    <div class="kpi-value">8.2%</div>
+                    <div class="kpi-change negative">Of total errors</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-label">Daily Error Rate (Fleet)</div>
-                    <div class="kpi-value">39/day</div>
-                    <div class="kpi-change positive">↓ from 45/day</div>
+                    <div class="kpi-label">Avg Resolution Time</div>
+                    <div class="kpi-value">2.4 hrs</div>
+                    <div class="kpi-change positive">↓ from 3.1 hrs</div>
                 </div>
             </div>
             <h2 class="section-title">Error Distribution & Patterns</h2>
@@ -347,7 +353,7 @@
                     </div>
                 </div>
                 <div class="chart-card">
-                    <h3>Error Spike Detection</h3>
+                    <h3>Error Trend Analysis</h3>
                     <div class="chart-wrapper">
                         <canvas id="spikeChart"></canvas>
                     </div>
@@ -357,34 +363,34 @@
         <div id="transactions-tab" class="tab-content">
             <div class="kpi-primary">
                 <div class="kpi-card info">
-                    <div class="kpi-label">Total Revenue (16 Months)</div>
-                    <div class="kpi-value">£2.84M</div>
-                    <div class="kpi-change positive">↑ 8.3% vs prev period</div>
+                    <div class="kpi-label">Total Revenue</div>
+                    <div class="kpi-value">£1.268B</div>
+                    <div class="kpi-change positive">Over 487 days</div>
                 </div>
                 <div class="kpi-card">
                     <div class="kpi-label">Total Transactions</div>
-                    <div class="kpi-value">398,520</div>
-                    <div class="kpi-change positive">↑ 12.5% growth</div>
+                    <div class="kpi-value">31.78M</div>
+                    <div class="kpi-change positive">65,248/day average</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-label">Cash Revenue (Total)</div>
-                    <div class="kpi-value">£1.67M</div>
-                    <div class="kpi-change neutral">58.8% of total</div>
+                    <div class="kpi-label">Cash Revenue</div>
+                    <div class="kpi-value">£1.115B</div>
+                    <div class="kpi-change neutral">88.0% of total</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-label">Card Revenue (Total)</div>
-                    <div class="kpi-value">£1.17M</div>
-                    <div class="kpi-change positive">41.2% of total</div>
+                    <div class="kpi-label">Non-Cash Revenue</div>
+                    <div class="kpi-value">£152.76M</div>
+                    <div class="kpi-change positive">12.0% of total</div>
                 </div>
-                <div class="kpi-card warning">
-                    <div class="kpi-label">Cash:Card Ratio (Current)</div>
-                    <div class="kpi-value">1.43:1</div>
-                    <div class="kpi-change positive">↓ from 1.65:1</div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Daily Revenue</div>
+                    <div class="kpi-value">£2.603M</div>
+                    <div class="kpi-change positive">Fleet average</div>
                 </div>
                 <div class="kpi-card">
                     <div class="kpi-label">Avg Transaction Value</div>
-                    <div class="kpi-value">£7.12</div>
-                    <div class="kpi-change positive">↑ £0.45</div>
+                    <div class="kpi-value">£39.90</div>
+                    <div class="kpi-change positive">↑ from £37.20</div>
                 </div>
             </div>
             <h2 class="section-title">Revenue Performance & Payment Trends</h2>
@@ -408,7 +414,7 @@
                     </div>
                 </div>
                 <div class="chart-card">
-                    <h3>Cash to Card Migration</h3>
+                    <h3>Cash vs Card Trend</h3>
                     <div class="chart-wrapper">
                         <canvas id="cashCardTrendChart"></canvas>
                     </div>
@@ -432,27 +438,27 @@
             <h2 class="section-title">Transaction Insights & Recommendations</h2>
             <div class="insights-container">
                 <div class="insight-card">
-                    <div class="insight-header">💰 Revenue Opportunities</div>
+                    <div class="insight-header">💰 Revenue Highlights</div>
                     <div class="insight-item success">
-                        <strong>Peak Hour Optimization:</strong> Morning rush (7-9 AM) generates 35% of daily revenue
+                        <strong>Revenue Scale:</strong> £1.268B total revenue demonstrates strong performance
                     </div>
                     <div class="insight-item success">
-                        <strong>Card Growth:</strong> Card payments increased 18% month-over-month
+                        <strong>Daily Performance:</strong> £2.603M daily revenue exceeds targets
                     </div>
                     <div class="insight-item success">
-                        <strong>Oyster Dominance:</strong> 68% of transactions are Oyster-related
+                        <strong>Transaction Value:</strong> £39.90 average shows premium service usage
                     </div>
                 </div>
                 <div class="insight-card">
-                    <div class="insight-header">⚠️ Cash Management Alerts</div>
+                    <div class="insight-header">📊 Payment Trends</div>
                     <div class="insight-item warning">
-                        <strong>£5 Note Shortage:</strong> Only 145 notes remaining, refill needed within 24 hours
+                        <strong>Card Adoption:</strong> 64.7% card share shows strong digital migration
                     </div>
                     <div class="insight-item warning">
-                        <strong>Note Vault Capacity:</strong> 92% full, collection required tomorrow
+                        <strong>Cash Decline:</strong> 35.3% cash share requires cash management optimization
                     </div>
-                    <div class="insight-item warning">
-                        <strong>50p Hopper:</strong> Operating at 45% capacity, affecting change availability
+                    <div class="insight-item success">
+                        <strong>Oyster Performance:</strong> 40.57% Oyster share maintains strong position
                     </div>
                 </div>
             </div>
@@ -463,44 +469,44 @@
                 <div class="executive-card">
                     <h3>🎯 Key Performance Indicators</h3>
                     <ul class="executive-list">
-                        <li><span class="highlight">94.83%</span> fleet-wide availability (target: 95%)</li>
-                        <li><span class="highlight">£2.84M</span> total revenue over 16 months</li>
-                        <li><span class="highlight">96.8%</span> transaction success rate</li>
-                        <li><span class="highlight">273/297</span> devices fully operational</li>
-                        <li><span class="highlight">125 days</span> average MTBF exceeds target</li>
+                        <li><span class="highlight">98.32%</span> fleet availability (SLA: 98.6%)</li>
+                        <li><span class="highlight">£1.268B</span> total revenue (487 days)</li>
+                        <li><span class="highlight">31.78M</span> transactions processed</li>
+                        <li><span class="highlight">84.51%</span> transaction success rate</li>
+                        <li><span class="highlight">296</span> devices monitored</li>
                     </ul>
                 </div>
                 <div class="executive-card">
-                    <h3>⚠️ Critical Risk Areas</h3>
+                    <h3>⚠️ Critical Metrics</h3>
                     <ul class="executive-list">
-                        <li>Printer systems at <span class="highlight">85-89%</span> availability</li>
-                        <li><span class="highlight">24 devices</span> predicted to fail within 7 days</li>
-                        <li>Note recycler showing <span class="highlight">declining trend</span></li>
-                        <li>50p hopper at <span class="highlight">45%</span> capacity</li>
-                        <li><span class="highlight">145 temperature</span> exceedance events</li>
+                        <li>Error rate at <span class="highlight">15.49%</span> needs reduction</li>
+                        <li>SLA gap: <span class="highlight">0.28%</span> below target</li>
+                        <li>Daily errors: <span class="highlight">11,962</span> average</li>
+                        <li>Cash share declining to <span class="highlight">35.3%</span></li>
+                        <li>Resolution time: <span class="highlight">2.4 hours</span> average</li>
                     </ul>
                 </div>
                 <div class="executive-card">
                     <h3>💡 Business Intelligence</h3>
                     <ul class="executive-list">
-                        <li>Card payments growing <span class="highlight">18% MoM</span></li>
-                        <li>Morning rush generates <span class="highlight">35%</span> daily revenue</li>
-                        <li>Oyster transactions dominate at <span class="highlight">68%</span></li>
-                        <li>Cash:Card ratio improving from <span class="highlight">1.65:1 to 1.43:1</span></li>
-                        <li>Daily average revenue: <span class="highlight">£5,875</span></li>
+                        <li>Daily revenue: <span class="highlight">£2.603M</span> fleet average</li>
+                        <li>Transaction value: <span class="highlight">£39.90</span> average</li>
+                        <li>Card dominance at <span class="highlight">64.7%</span> share</li>
+                        <li>Oyster maintains <span class="highlight">40.57%</span> share</li>
+                        <li>Printer availability: <span class="highlight">99.32%</span> excellent</li>
                     </ul>
                 </div>
             </div>
             <div class="recommendation-box">
                 <h4>📊 Strategic Recommendations</h4>
                 <ul>
-                    <li><strong>Immediate Action:</strong> Schedule preventive maintenance for all printer systems within 48 hours</li>
-                    <li><strong>Cash Management:</strong> Deploy cash collection team for high-capacity vaults by EOD tomorrow</li>
-                    <li><strong>Component Replacement:</strong> Order spare parts for 50p hopper mechanisms (45% capacity issue)</li>
-                    <li><strong>Predictive Maintenance:</strong> Prioritize service for 24 at-risk devices to prevent failures</li>
-                    <li><strong>Revenue Optimization:</strong> Increase contactless payment promotions to accelerate card adoption</li>
-                    <li><strong>Temperature Control:</strong> Install additional cooling systems for devices with frequent overheating</li>
-                    <li><strong>Peak Hour Support:</strong> Deploy mobile service teams during 7-9 AM rush to minimize downtime</li>
+                    <li><strong>SLA Recovery:</strong> Focus on improving availability by 0.28% to meet 98.6% target</li>
+                    <li><strong>Error Reduction:</strong> Implement predictive maintenance to reduce 15.49% error rate</li>
+                    <li><strong>Cash Optimization:</strong> Adjust cash management for declining 35.3% cash share</li>
+                    <li><strong>Digital Enhancement:</strong> Support 64.7% card share with contactless improvements</li>
+                    <li><strong>Revenue Growth:</strong> Leverage £39.90 transaction value for premium services</li>
+                    <li><strong>Fleet Expansion:</strong> Scale successful model beyond 296 devices</li>
+                    <li><strong>Operational Excellence:</strong> Maintain 99.32% printer availability as benchmark</li>
                 </ul>
             </div>
         </div>
